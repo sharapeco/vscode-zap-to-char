@@ -3,26 +3,38 @@
 	"displayName": "zap-to-char",
 	"description": "zap-to-char for Visual Studio Code",
 	"version": "0.0.1",
+	"publisher": "sharapeco",
+	"license": "MIT",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		"emacs", "xyzzy", "zap", "cursor"
+	],
 	"activationEvents": [
-		"onCommand:zaptochar.forward",
-		"onCommand:zaptochar.backward"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
 				"command": "zaptochar.forward",
-				"title": "Zap to char: forward"
+				"title": "Zap to char: Jump forward"
 			},
 			{
 				"command": "zaptochar.backward",
-				"title": "Zap to char: backward"
+				"title": "Zap to char: Jump backward"
+			},
+			{
+				"command": "zaptochar.deleteForward",
+				"title": "Zap to char: Delete forward"
+			},
+			{
+				"command": "zaptochar.deleteBackward",
+				"title": "Zap to char: Delete backward"
 			}
 		]
 	},

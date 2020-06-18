@@ -6,39 +6,112 @@ import * as vscode from 'vscode';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	// console.log('Congratulations, your extension "zaptochar" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
+	// Register a text editor command
 	const register = (command: string, callback: (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => void) => {
 		context.subscriptions.push(
 			vscode.commands.registerTextEditorCommand(`zaptochar.${command}`, callback)
 		);
 	};
 
-	register('forward', (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
-		// Display a message box to the user
-		vscode.window.showInformationMessage('zap-to-char: forward!');
-
-		const { document } = textEditor;
-		const activePoint = textEditor.selection.active;
-		const activeOffset = document.offsetAt(activePoint);
-		const text = document.getText();
-		const pos = text.indexOf('r', activeOffset);
-		if (pos < 0) {
+	register('forward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+		const toFind = await inputChar({ prompt: 'Zap to char:' });
+		if (toFind === undefined) {
 			return;
 		}
-
-		console.log(textEditor.selection)
+		const foundPosition = findTextFromCursorPosition(textEditor, toFind);
+		if (!foundPosition) {
+			return;
+		}
+		textEditor.selections = [
+			new vscode.Selection(foundPosition, foundPosition)
+		];
 	});
 
-	register('backward', (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
-		// Display a message box to the user
-		vscode.window.showInformationMessage('zap-to-char: backward!');
+	register('backward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+		const toFind = await inputChar({ prompt: 'Zap to backward char:' });
+		if (toFind === undefined) {
+			return;
+		}
+		const foundPosition = findTextFromCursorPosition(textEditor, toFind, true);
+		if (!foundPosition) {
+			return;
+		}
+		textEditor.selections = [
+			new vscode.Selection(foundPosition, foundPosition)
+		];
 	});
+
+	register('deleteForward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+		const toFind = await inputChar({ prompt: 'Delete to char:' });
+		if (toFind === undefined) {
+			return;
+		}
+		const currentPosition = textEditor.selection.active;
+		const foundPosition = findTextFromCursorPosition(textEditor, toFind);
+		if (!foundPosition) {
+			return;
+		}
+		textEditor.selections = [
+			new vscode.Selection(currentPosition, foundPosition)
+		];
+		vscode.commands.executeCommand('editor.action.clipboardCutAction');
+	});
+
+	register('deleteBackward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+		const toFind = await inputChar({ prompt: 'Delete to backward char:' });
+		if (toFind === undefined) {
+			return;
+		}
+		const currentPosition = textEditor.selection.active;
+		const foundPosition = findTextFromCursorPosition(textEditor, toFind, true);
+		if (!foundPosition) {
+			return;
+		}
+		textEditor.selections = [
+			new vscode.Selection(currentPosition, foundPosition)
+		];
+		vscode.commands.executeCommand('editor.action.clipboardCutAction');
+	});
+}
+
+/**
+ * Input single character
+ * @param options
+ */
+function inputChar (options: vscode.InputBoxOptions): Promise<string> {
+	return new Promise((resolve: (value?: string) => void) => {
+		const dialog = vscode.window.createInputBox();
+		Object.assign(dialog, options);
+
+		let resolved = false;
+		dialog.onDidChangeValue(() => {
+			resolve(dialog.value);
+			resolved = true;
+			dialog.hide();
+		});
+		dialog.onDidHide(() => {
+			if (!resolved) {
+				resolve();
+			}
+		});
+		dialog.show();
+	});
+}
+
+function findTextFromCursorPosition (textEditor: vscode.TextEditor, toFind: string, backward: boolean = false): vscode.Position | null {
+	const { document } = textEditor;
+	const activePosition = textEditor.selection.active;
+	const activeOffset = document.offsetAt(activePosition);
+	const text = document.getText();
+	const foundOffset = backward ?
+		text.lastIndexOf(toFind, activeOffset - 1) :
+		text.indexOf(toFind, activeOffset);
+	if (foundOffset < 0) {
+		return null;
+	}
+
+	const adjustment = backward ? 0 : 1;
+	return document.positionAt(foundOffset + adjustment);
 }
 
 // this method is called when your extension is deactivated
