@@ -5,6 +5,11 @@
 	"version": "0.0.1",
 	"publisher": "sharapeco",
 	"license": "MIT",
+	"icon": "assets/icon.png",
+	"galleryBanner": {
+		"color": "#3a3d41",
+		"theme": "dark"
+	},
 	"engines": {
 		"vscode": "^1.46.0"
 	},
