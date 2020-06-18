@@ -5,6 +5,10 @@
 	"version": "0.0.1",
 	"publisher": "sharapeco",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sharapeco/vscode-zap-to-char/"
+	},
 	"icon": "assets/icon.png",
 	"galleryBanner": {
 		"color": "#3a3d41",
