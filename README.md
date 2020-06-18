@@ -6,11 +6,11 @@ A minimum zap-to-char implement for Visual Studio Code.
 
 ### Zap to char: Jump forward/backward
 
-These commands move the cursor forward/backward up to a specified character you input.
+This command moves the cursor forward/backward up to a specified character you input.
 
 ### Zap to char: Delete forward/backward
 
-These commands remove the text from the current cursor position to a specified character you input.
+This command removes the text from the current cursor position to a specified character you input.
 Removed text will be moved to clipboard.
 
 ## Requirements
