@@ -13,18 +13,24 @@ export function activate(context: vscode.ExtensionContext) {
 		);
 	};
 
+	// cf. TypeScript で nullable な Array を non-null に filter する - Qiita
+	// https://qiita.com/mangano-ito/items/5583783cd88ea5f4deb4
+	const notNull = function <T>(item: T | null): item is T {
+		return item !== null
+	}
+
 	register('forward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
 		const toFind = await inputChar({ prompt: 'Zap to char:' });
 		if (toFind === undefined) {
 			return;
 		}
-		const foundPosition = findTextFromCursorPosition(textEditor, toFind);
-		if (!foundPosition) {
-			return;
-		}
-		textEditor.selections = [
-			new vscode.Selection(foundPosition, foundPosition)
-		];
+		textEditor.selections = textEditor.selections
+			.map(selection => {
+				const foundPosition = findTextFromSelection(textEditor, selection, toFind);
+				if (!foundPosition) return null;
+				return new vscode.Selection(foundPosition, foundPosition);
+			})
+			.filter(notNull);
 	});
 
 	register('backward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
@@ -32,13 +38,13 @@ export function activate(context: vscode.ExtensionContext) {
 		if (toFind === undefined) {
 			return;
 		}
-		const foundPosition = findTextFromCursorPosition(textEditor, toFind, true);
-		if (!foundPosition) {
-			return;
-		}
-		textEditor.selections = [
-			new vscode.Selection(foundPosition, foundPosition)
-		];
+		textEditor.selections = textEditor.selections
+			.map(selection => {
+				const foundPosition = findTextFromSelection(textEditor, selection, toFind, true);
+				if (!foundPosition) return null;
+				return new vscode.Selection(foundPosition, foundPosition);
+			})
+			.filter(notNull);
 	});
 
 	register('deleteForward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
@@ -46,15 +52,17 @@ export function activate(context: vscode.ExtensionContext) {
 		if (toFind === undefined) {
 			return;
 		}
-		const currentPosition = textEditor.selection.active;
-		const foundPosition = findTextFromCursorPosition(textEditor, toFind);
-		if (!foundPosition) {
-			return;
+		const newSelection = textEditor.selections
+			.map(selection => {
+				const foundPosition = findTextFromSelection(textEditor, selection, toFind);
+				if (!foundPosition) return null;
+				return new vscode.Selection(selection.active, foundPosition);
+			})
+			.filter(notNull);
+		if (newSelection.length > 0) {
+			textEditor.selections = newSelection;
+			vscode.commands.executeCommand('editor.action.clipboardCutAction');
 		}
-		textEditor.selections = [
-			new vscode.Selection(currentPosition, foundPosition)
-		];
-		vscode.commands.executeCommand('editor.action.clipboardCutAction');
 	});
 
 	register('deleteBackward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
@@ -62,15 +70,17 @@ export function activate(context: vscode.ExtensionContext) {
 		if (toFind === undefined) {
 			return;
 		}
-		const currentPosition = textEditor.selection.active;
-		const foundPosition = findTextFromCursorPosition(textEditor, toFind, true);
-		if (!foundPosition) {
-			return;
+		const newSelection = textEditor.selections
+			.map(selection => {
+				const foundPosition = findTextFromSelection(textEditor, selection, toFind, true);
+				if (!foundPosition) return null;
+				return new vscode.Selection(selection.active, foundPosition);
+			})
+			.filter(notNull);
+		if (newSelection.length > 0) {
+			textEditor.selections = newSelection;
+			vscode.commands.executeCommand('editor.action.clipboardCutAction');
 		}
-		textEditor.selections = [
-			new vscode.Selection(currentPosition, foundPosition)
-		];
-		vscode.commands.executeCommand('editor.action.clipboardCutAction');
 	});
 }
 
@@ -98,10 +108,9 @@ function inputChar (options: vscode.InputBoxOptions): Promise<string> {
 	});
 }
 
-function findTextFromCursorPosition (textEditor: vscode.TextEditor, toFind: string, backward: boolean = false): vscode.Position | null {
+function findTextFromSelection (textEditor: vscode.TextEditor, selection: vscode.Selection, toFind: string, backward: boolean = false): vscode.Position | null {
 	const { document } = textEditor;
-	const activePosition = textEditor.selection.active;
-	const activeOffset = document.offsetAt(activePosition);
+	const activeOffset = document.offsetAt(selection.active);
 	const text = document.getText();
 	const foundOffset = backward ?
 		text.lastIndexOf(toFind, activeOffset - 1) :
