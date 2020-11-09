@@ -23,6 +23,10 @@ You can define key bindings manually.
 
 ## Release Notes
 
+### 0.1.0
+
+Support multiple cursor.
+
 ### 0.0.1
 
 It works!
