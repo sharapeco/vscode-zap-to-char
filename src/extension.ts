@@ -16,8 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// cf. TypeScript で nullable な Array を non-null に filter する - Qiita
 	// https://qiita.com/mangano-ito/items/5583783cd88ea5f4deb4
 	const notNull = function <T>(item: T | null): item is T {
-		return item !== null
-	}
+		return item !== null;
+	};
 
 	register('forward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
 		const toFind = await inputChar({ prompt: 'Zap to char:' });
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 		textEditor.selections = textEditor.selections
 			.map(selection => {
 				const foundPosition = findTextFromSelection(textEditor, selection, toFind);
-				if (!foundPosition) return null;
+				if (!foundPosition) {return null;}
 				return new vscode.Selection(foundPosition, foundPosition);
 			})
 			.filter(notNull);
@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		textEditor.selections = textEditor.selections
 			.map(selection => {
 				const foundPosition = findTextFromSelection(textEditor, selection, toFind, true);
-				if (!foundPosition) return null;
+				if (!foundPosition) {return null;}
 				return new vscode.Selection(foundPosition, foundPosition);
 			})
 			.filter(notNull);
@@ -55,7 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const newSelection = textEditor.selections
 			.map(selection => {
 				const foundPosition = findTextFromSelection(textEditor, selection, toFind);
-				if (!foundPosition) return null;
+				if (!foundPosition) {return null;}
 				return new vscode.Selection(selection.active, foundPosition);
 			})
 			.filter(notNull);
@@ -73,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const newSelection = textEditor.selections
 			.map(selection => {
 				const foundPosition = findTextFromSelection(textEditor, selection, toFind, true);
-				if (!foundPosition) return null;
+				if (!foundPosition) {return null;}
 				return new vscode.Selection(selection.active, foundPosition);
 			})
 			.filter(notNull);
