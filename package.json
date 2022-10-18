@@ -2,7 +2,6 @@
 	"name": "zaptochar",
 	"displayName": "zap-to-char",
 	"description": "zap-to-char for Visual Studio Code",
-	"version": "0.0.1",
 	"publisher": "sharapeco",
 	"license": "MIT",
 	"repository": {
