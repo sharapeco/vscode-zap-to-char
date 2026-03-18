@@ -1,0 +1,24 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.8/schema.json",
+	"files": {
+		"includes": ["src/**/*.ts"]
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"style": {
+				"useBlockStatements": "warn",
+				"useThrowOnlyError": "warn"
+			},
+			"suspicious": {
+				"noDoubleEquals": "warn"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"semicolons": "always"
+		}
+	}
+}
