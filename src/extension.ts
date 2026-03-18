@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
 
 	// Register a text editor command
-	const register = (command: string, callback: (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => void) => {
+	const register = (command: string, callback: (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: unknown[]) => void) => {
 		context.subscriptions.push(
 			vscode.commands.registerTextEditorCommand(`zaptochar.${command}`, callback)
 		);
@@ -15,11 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// cf. TypeScript で nullable な Array を non-null に filter する - Qiita
 	// https://qiita.com/mangano-ito/items/5583783cd88ea5f4deb4
-	const notNull = function <T>(item: T | null): item is T {
-		return item !== null;
-	};
+	const notNull = <T>(item: T | null): item is T => item !== null;
 
-	register('forward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+	register('forward', async (textEditor: vscode.TextEditor, _edit: vscode.TextEditorEdit, _args: unknown[]) => {
 		const toFind = await inputChar({ prompt: 'Zap to char:' });
 		if (toFind === undefined) {
 			return;
@@ -33,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 			.filter(notNull);
 	});
 
-	register('backward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+	register('backward', async (textEditor: vscode.TextEditor, _edit: vscode.TextEditorEdit, _args: unknown[]) => {
 		const toFind = await inputChar({ prompt: 'Zap to backward char:' });
 		if (toFind === undefined) {
 			return;
@@ -47,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 			.filter(notNull);
 	});
 
-	register('deleteForward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+	register('deleteForward', async (textEditor: vscode.TextEditor, _edit: vscode.TextEditorEdit, _args: unknown[]) => {
 		const toFind = await inputChar({ prompt: 'Delete to char:' });
 		if (toFind === undefined) {
 			return;
@@ -65,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	register('deleteBackward', async (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) => {
+	register('deleteBackward', async (textEditor: vscode.TextEditor, _edit: vscode.TextEditorEdit, _args: unknown[]) => {
 		const toFind = await inputChar({ prompt: 'Delete to backward char:' });
 		if (toFind === undefined) {
 			return;
@@ -88,7 +86,7 @@ export function activate(context: vscode.ExtensionContext) {
  * Input single character
  * @param options
  */
-function inputChar (options: vscode.InputBoxOptions): Promise<string> {
+function inputChar (options: vscode.InputBoxOptions): Promise<string | undefined> {
 	return new Promise((resolve: (value?: string) => void) => {
 		const dialog = vscode.window.createInputBox();
 		Object.assign(dialog, options);
