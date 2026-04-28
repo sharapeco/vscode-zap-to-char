@@ -17,9 +17,6 @@ importers:
       '@types/glob':
         specifier: 8.0.0
         version: 8.0.0
-      '@types/mocha':
-        specifier: 10.0.0
-        version: 10.0.0
       '@types/node':
         specifier: ^13.11.0
         version: 13.13.52
@@ -110,9 +107,6 @@ packages:
 
   '@types/minimatch@5.1.2':
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
-
-  '@types/mocha@10.0.0':
-    resolution: {integrity: sha512-rADY+HtTOA52l9VZWtgQfn4p+UDVM2eDVkMZT1I6syp0YKxW2F9v+0pbRZLsvskhQv/vMb6ZfCay81GHbz5SHg==}
 
   '@types/node@13.13.52':
     resolution: {integrity: sha512-s3nugnZumCC//n4moGGe6tkNMyYEdaDBitVjwPxXmR5lnMG5dHePinH2EdxkG3Rh1ghFHHixAG4NJhpJW1rthQ==}
@@ -620,8 +614,6 @@ snapshots:
       '@types/node': 18.11.7
 
   '@types/minimatch@5.1.2': {}
-
-  '@types/mocha@10.0.0': {}
 
   '@types/node@13.13.52': {}
 
